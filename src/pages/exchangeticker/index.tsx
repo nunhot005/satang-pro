@@ -18,11 +18,11 @@ const formatter = Intl.NumberFormat();
 
 export function ExchangeTickerScreen() {
   const [seletedExchange, setSelectedExchange] = useState(buttons[0]);
+  const [retryTrigger, setRetryTrigger] = useState(0);
 
   const dispatch = useDispatch();
   const ticker = useSelector((state: RootState) => {
-    console.log(state);
-    return state.myFirstReducer.ticker;
+    return state.myReducer.ticker;
   });
 
   let navigate = useNavigate();
@@ -39,7 +39,7 @@ export function ExchangeTickerScreen() {
     return () => {
       clearInterval(timer);
     };
-  }, [seletedExchange]);
+  }, [seletedExchange, retryTrigger]);
 
   return (
     <Card
@@ -99,6 +99,20 @@ export function ExchangeTickerScreen() {
             {ticker?.type == "loading" && (
               <Row>
                 <Spin />
+              </Row>
+            )}
+
+            {ticker?.type == "error" && (
+              <Row>
+                <Text>fetch error</Text>
+                <Button
+                  style={{ margin: 8 }}
+                  onClick={() => {
+                    setRetryTrigger((x) => x + 1);
+                  }}
+                >
+                  Retry
+                </Button>
               </Row>
             )}
 

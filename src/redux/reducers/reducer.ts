@@ -1,5 +1,6 @@
 import { Exchange, State, Ticker, TickerAction } from "../../model/Ticker";
 import {
+  GET_TICKER_ERROR,
   GET_TICKER_FETCH,
   GET_TICKER_SUCCESS,
   SET_TICKER,
@@ -36,8 +37,7 @@ const initialState: State = {
 
 // export const tickerReducer = tickerSlice.reducer;
 
-const myFirstReducer = (state: State = initialState, action: any): State => {
-  console.log("action", action);
+const myReducer = (state: State = initialState, action: any): State => {
   switch (action.type) {
     case GET_TICKER_FETCH:
       return { ...state, ticker: { type: "loading" } };
@@ -46,9 +46,14 @@ const myFirstReducer = (state: State = initialState, action: any): State => {
         ...state,
         ticker: { type: "success", data: action.payload.ticker },
       };
+    case GET_TICKER_ERROR:
+      return {
+        ...state,
+        ticker: { type: "error", error: action.payload.error },
+      };
     default:
       return state;
   }
 };
 
-export default myFirstReducer;
+export default myReducer;

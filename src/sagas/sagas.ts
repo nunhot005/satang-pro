@@ -1,7 +1,11 @@
 import { AxiosResponse } from "axios";
 import { all, call, put, takeEvery, takeLatest } from "redux-saga/effects";
-import { Ticker } from "../model/Ticker";
-import { getTickerFetch, getTickerFetchSuccess } from "../redux/actions/action";
+import { Result, Ticker } from "../model/Ticker";
+import {
+  getTickerFetch,
+  getTickerFetchError,
+  getTickerFetchSuccess,
+} from "../redux/actions/action";
 import {
   GET_TICKER_FETCH,
   GET_TICKER_SUCCESS,
@@ -9,9 +13,15 @@ import {
 import { tickerFetch } from "./api";
 
 function* workGetTickerFetch(action: ReturnType<typeof getTickerFetch>) {
-  const response: Ticker = yield call(tickerFetch, action.payload?.symbol);
-  console.log("response", response);
-  yield put(getTickerFetchSuccess({ ticker: response }));
+  const response: Result<Ticker> = yield call(
+    tickerFetch,
+    action.payload?.symbol
+  );
+  if (response.type == "success") {
+    yield put(getTickerFetchSuccess({ ticker: response.data }));
+  } else if (response.type == "error") {
+    yield put(getTickerFetchError({ error: response.error }));
+  }
 }
 
 function* mySaga() {
